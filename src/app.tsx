@@ -11,7 +11,19 @@ import './app.scss'
 
 class App extends Component {
 
-  componentDidMount () {}
+  componentDidMount () {
+    // 获取用户信息
+    try {
+      var value = wx.getStorageSync('userInfo')
+      if (value) {
+        wx.reLaunch({
+          url: './pages/index/index'
+        })
+      }
+    } catch (errorMsg) {
+      console.log(errorMsg);
+    }
+  }
 
   componentDidShow () {}
 
@@ -29,7 +41,7 @@ class App extends Component {
   config: Config = {
     pages: [
       'pages/index/index',
-      'pages/statistics/statistics'
+      'pages/punch/punch'
     ],
     window: {
       backgroundTextStyle: 'light',
@@ -48,8 +60,8 @@ class App extends Component {
         selectedIconPath: "./images/motion.png"
       },
       {
-        pagePath: "pages/statistics/statistics",
-        text: "我的",
+        pagePath: "pages/punch/punch",
+        text: "打卡",
         iconPath: "./images/register-line.png",
         selectedIconPath: "./images/register.png"
       }]

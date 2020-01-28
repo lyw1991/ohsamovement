@@ -1,6 +1,5 @@
-import Taro, { Component, Config } from '@tarojs/taro'
+import Taro, { Component } from '@tarojs/taro'
 import { View, Text, Swiper, SwiperItem, Navigator, ScrollView } from '@tarojs/components'
-import { AtTabBar } from 'taro-ui'
 import './index.scss'
 
 export default class Index extends Component {
