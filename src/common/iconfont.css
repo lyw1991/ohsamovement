@@ -1,0 +1,64 @@
+@font-face {font-family: "iconfont";
+  src: url('iconfont.woff?t=1580183172559') format('woff'); /* iOS 4.1- */
+}
+
+.ohsa {
+  font-family: "iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.iconball:before {
+  content: "\e743";
+}
+
+.iconmore:before {
+  content: "\e744";
+}
+
+.iconclimbingstairs:before {
+  content: "\e745";
+}
+
+.iconregister-line:before {
+  content: "\e746";
+}
+
+.iconmotion:before {
+  content: "\e747";
+}
+
+.iconregister:before {
+  content: "\e748";
+}
+
+.iconride:before {
+  content: "\e749";
+}
+
+.icongym:before {
+  content: "\e74a";
+}
+
+.iconropeskipping:before {
+  content: "\e74b";
+}
+
+.iconswim:before {
+  content: "\e74c";
+}
+
+.iconstepcounting:before {
+  content: "\e74d";
+}
+
+.iconmotion-line:before {
+  content: "\e74e";
+}
+
+.iconwalk:before {
+  content: "\e74f";
+}
+
