@@ -28,13 +28,31 @@ class App extends Component {
    */
   config: Config = {
     pages: [
-      'pages/index/index'
+      'pages/index/index',
+      'pages/statistics/statistics'
     ],
     window: {
       backgroundTextStyle: 'light',
       navigationBarBackgroundColor: '#fff',
       navigationBarTitleText: 'WeChat',
       navigationBarTextStyle: 'black'
+    },
+    tabBar: {
+      color: '#ddd',
+      selectedColor: 'red',
+      position: 'bottom',
+      list: [{
+        pagePath: "pages/index/index",
+        text: "运动",
+        iconPath: "./images/motion-line.png",
+        selectedIconPath: "./images/motion.png"
+      },
+      {
+        pagePath: "pages/statistics/statistics",
+        text: "我的",
+        iconPath: "./images/register-line.png",
+        selectedIconPath: "./images/register.png"
+      }]
     }
   }
 

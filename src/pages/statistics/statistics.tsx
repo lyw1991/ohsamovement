@@ -1,7 +1,7 @@
 import Taro, { Component, Config } from '@tarojs/taro'
 import { View, Text, Swiper, SwiperItem, Navigator, ScrollView } from '@tarojs/components'
 import { AtTabBar } from 'taro-ui'
-import './index.scss'
+import './statistics.scss'
 
 export default class Index extends Component {
 
@@ -35,16 +35,7 @@ export default class Index extends Component {
     render () {
         const {currentTabIndex} = this.state;
         return (
-            <view>首页</view>
-            // <AtTabBar
-            //     fixed
-            //     tabList={[
-            //         { title: '运动', image: MotionLine, selectedImage: Motion },
-            //         { title: '打卡', image: RegisterLine, selectedImage: Register },
-            //     ]}
-            //     onClick={this.handleTabbar.bind(this)}
-            //     current={currentTabIndex}
-            // />
+            <view>askdf</view>
         );
     }
 }

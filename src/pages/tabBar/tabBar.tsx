@@ -35,7 +35,7 @@ export default class TabBar extends Component {
                     {
                         this.props.tabList.map((item, index) => {
                             return (
-                                <View className="taro__tabbar-item taro__tabbar-item--active" key={index} onClick={this.updateTabbar.bind(this, index)}>
+                                <View className="taro__tabbar-item taro__tabbar-item--active" key={item.iconSelect} onClick={this.updateTabbar.bind(this, index)}>
                                     <View className="taro__tabbar-icon">
                                         <Text className={"iconfont taro__tabbar-iconfont ohsa " + item.icon} style={{color: updateCurrent == index ? tintColor : color}} />
                                         {/* 圆点 */}
