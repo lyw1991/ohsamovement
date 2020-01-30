@@ -1,19 +1,325 @@
-// @import "~taro-ui/dist/style/components/swiper.scss";
-.user-info {
-    height: 200px;
-    background: #fafafa;
+@import "~taro-ui/dist/style/components/segmented-control.scss";
+@import "~taro-ui/dist/style/components/input.scss";
+@import "~taro-ui/dist/style/components/button.scss";
+@import "~taro-ui/dist/style/components/loading.scss";
+@import "~taro-ui/dist/style/components/toast.scss";
+@import "~taro-ui/dist/style/components/message.scss";
+
+$greenColor: #2c8846;
+$lightGreyColor: #f6f6f6;
+$darkGreyColor: #666;
+
+@mixin flex-both-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-swiper {
-    padding-top: 30px;
- }
-.swiper-img {
+// 用户信息栏
+.user-info {
+    display: flex;
+    align-items: center;
+    padding: 0 40px;
     width: 100%;
-    display: block;
-    transform: scale(0.8);
-    transition: all 0.3s ease;
-    border-radius: 6px;
+    height: 240px;
+    border-bottom: 15px solid #fafafa;
+    background: #fff;
+    
+    .avatar-image {
+        width: 180px;
+        height: 180px;
+        border-radius: 20px;
+    }
+    
+    .user-detail {
+        margin-left: 40px;
+        line-height: 48rpx;
+        color: $darkGreyColor;
+        font-size: 26rpx;
+    }
+    
+    .margin-top-space {
+        margin-top: 40px;
+    }
+    
+    .complete-color {
+        color: $greenColor;
+    }
+    
+    .unComplete-color {
+        color: #f30728;
+    }
 }
-.swiper-img.swiper-active {
-    transform: scale(1);  //放大缩放的效果
- }
+
+// 运动类型选择器
+.scrollview {
+    margin-top: 40px;
+    padding: 0 30px;
+    height: 200px;
+    white-space: nowrap;
+    box-sizing: border-box;
+    
+    .sport-item-wrapper { // width margin（l + r） 如有修改， tsx文件中的 itemWidth 也应修改
+        display: inline-block;
+        margin: 0 6rpx;
+        width: 88rpx;
+        height: 200rpx;
+    }
+    
+    .sport-item-wrapper:first-child {
+        margin-left: calc((100% - 44rpx) / 2 - 30rpx);
+    }
+    
+    .sport-item-wrapper:last-child {
+        margin-right: calc((100% - 44rpx) / 2 - 30rpx);
+    }
+    
+    .sport-flex-box {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+        width: 100%;
+        
+        .sport-item-image.current-sport, .sport-title-wrapper {
+            width: 100%;
+        }
+        
+        .sport-item-divider {
+            margin-top: 6px;
+            height: 8px;
+            width: 100%;
+            border-radius: 4px;
+            background: $greenColor;
+        }
+        
+        .sport-item-title {
+            margin-top: 6px;
+            text-align: center;
+            font-size: 26px;
+            color: $greenColor;
+        }
+
+        .cover-view {
+            position: absolute;
+            width: 88rpx;
+            height: 140rpx;
+        }
+    }
+
+    .sport-item-image {
+        height: 140px;
+    }
+
+    // 以当前选中类型为中心，两侧的图片渐小，渐透明
+    .left-item .sport-item-image, .right-item .sport-item-image {
+        width: 85%;
+    }
+
+    .half-opacity .sport-item-image {
+        width: 72%;
+    }
+
+    .almost-opacity .sport-item-image {
+        width: 60%;
+    }
+            
+    .left-item.almost-opacity .cover-view {
+        background: linear-gradient(to right, #fff, rgba(255,255,255, .5));
+    }
+        
+    .left-item.half-opacity .cover-view {
+        background: linear-gradient(to right, rgba(255,255,255, .5), rgba(255,255,255, .3));
+    }
+    
+    .right-item.half-opacity .cover-view {
+        background: linear-gradient(to right, rgba(255,255,255, .3), rgba(255,255,255, .5));
+    }
+    
+    .right-item.almost-opacity .cover-view {
+        background: linear-gradient(to right, rgba(255,255,255, .5), #fff);
+    }
+}
+
+// 表单部分
+.form-wrapper {
+    padding: 0 24px;
+}
+
+// 日期选择按钮组
+.button-group {
+    display: flex;
+    margin-top: 30px;
+}
+
+.button-item {
+    @include flex-both-center;
+    flex-direction: column;
+    width: 25%;
+    height: 66px;
+    font-size: 26px;
+    color: $greenColor;
+    border: 1px solid $greenColor;
+    border-right: 0;
+    box-sizing: border-box;
+}
+
+.button-item:first-child {
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
+
+.button-item:last-child {
+    border-right: 1px solid $greenColor;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+.button-item.current {
+    color: #fff;
+    background: $greenColor;
+}
+
+// 时间选择器
+picker {
+    width: 100%;
+    height: 64px;
+    
+    .picker {
+        @include flex-both-center;
+        flex-direction: column;
+        width: 100%;
+        height: 64px;
+    }
+}
+
+.button-date {
+    font-size: 16px;
+}
+
+// 公里数按钮组
+.segmented-control {
+    margin-top: 40px;
+    height: 66px;
+    line-height: 52px;
+}
+
+.kmValue-input-wrapper {
+    @include flex-both-center;
+    margin-top: 40px;
+    
+    .input-label {
+        width: 175rpx;
+        font-size: 26rpx;
+        color: $greenColor;
+    }
+
+    .input-content {
+        width: 527rpx;
+    }
+
+    .at-input {
+        display: flex;
+        margin-left: 0;
+        padding-left: 32px;
+        height: 66rpx;
+        border: 1px solid $greenColor;
+        border-radius: 10px;
+        box-sizing: border-box;
+    }
+
+    .at-input input {
+        font-size: 26rpx;
+    }
+
+    .at-input::after {
+        border: none;
+    }
+}
+
+// 截图上传
+.uploader-wrapper {
+    display: flex;
+    padding: 40px 24px;
+    height: 260rpx;
+    box-sizing: border-box;
+}
+
+.image-wrapper {
+    position: relative;
+    margin-right: 20px;
+    padding: 9px;
+    width: 180px;
+    height: 180px;
+    border: 1px solid $lightGreyColor;
+    box-sizing: border-box;
+    
+    .image-item {
+        width: 160px;
+        height: 160px;
+    }
+
+    .delete-btn {
+        position: absolute;
+        right: 4px;
+        top: 2px;
+        padding-left: 20px;
+        padding-bottom: 20px;
+        width: 40px;
+        height: 40px;
+    }
+}
+
+.uploader-btn-wrapper {
+    display: flex;
+    align-items: flex-end;
+}
+
+.uploader-btn {
+    @include flex-both-center;
+    width: 129px;
+    height: 116px;
+    border-radius: 10px;
+    background: $lightGreyColor;
+}
+
+.uploader-btn Image {
+    width: 100px;
+    height: 80px;
+}
+
+.uploader-tip {
+    margin-left: 10px;
+    font-size: 20px;
+    color: $darkGreyColor;
+}
+
+.red-text {
+    color: red;
+}
+
+// 打卡按钮
+.punch-btn-wrapper {
+    display: flex;
+    justify-content: center;
+
+    .at-button--circle {
+        height: 66rpx;
+        width: 273rpx;
+        background: $greenColor;
+        border: 0
+    }
+        
+    Image {
+        margin-right: 30rpx;
+        width: 41px;
+        height: 37px;
+        vertical-align: -6rpx;
+    }
+
+    .at-button__text {
+        display: block;
+        line-height: 66rpx;
+        font-size: 31rpx;
+    }
+}
