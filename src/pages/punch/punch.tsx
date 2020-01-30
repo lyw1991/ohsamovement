@@ -51,7 +51,7 @@ const imageMap = {
     ridingGrey: ridingImageGrey,
     othersGrey: othersImageGrey,
 };
-const itemWidth = 44 + 3 * 2; // width + margin * 2 每一个运动类型图片的宽度及margin
+let itemWidth = 44 + 12; // 每一个运动类型图片的宽度及margin
 
 export default class Index extends Component {
 
@@ -100,7 +100,7 @@ export default class Index extends Component {
             files: [], // 图片上传
             saving: false, // 打卡按钮的加载状态
             saved: false, // 打卡成功提示
-        }
+        };
     }
 
     componentDidMount () {
@@ -126,6 +126,11 @@ export default class Index extends Component {
             dateBtnArray,
             todayText: todayText
         });
+        wx.getSystemInfo({
+            success: res => {
+                itemWidth = (res.screenWidth - 30) * 0.1173 + 12;
+            }
+        })
     }
 
     /**
@@ -153,19 +158,9 @@ export default class Index extends Component {
     }
     
     // 运动类型选择事件: 根据滚动位移计算当前选中的类型
-    onScroll = (e) => {
-        const {scrollLeft, deltaX} = e.detail;
-        let scrollDistance = scrollLeft / itemWidth;
-        let scrollDistanceFloor = Math.floor(scrollDistance);
-        let sportIndex = 0;
-        if (deltaX < 0) { // 右侧内容进入视野: 根据滚动速度判断是否要选中下一个图片
-            sportIndex = deltaX < -8 ? Math.ceil(scrollDistance) : scrollDistanceFloor;
-            if (sportIndex > 9) {
-                sportIndex = 9;
-            }
-        } else {
-            sportIndex = deltaX > 8 ? Math.floor(scrollDistance) : scrollDistanceFloor;
-        }
+    onScroll = (e: {detail: {scrollLeft: number}}) => {
+        const {scrollLeft} = e.detail;
+        let sportIndex = Math.round(scrollLeft / itemWidth);
         this.setState({
             currentSportIndex: sportIndex,
             selectedSportType: this.state.sportTypeArray[sportIndex].sportType
@@ -174,16 +169,9 @@ export default class Index extends Component {
 
     // 日期选择按钮
     handleDateBtnClick = (e: number) => {
-        let floatLayoutVisible = false;
         this.setState({
-            currentDateBtn: e,
-            floatLayoutVisible: floatLayoutVisible
+            currentDateBtn: e
         });
-    }
-
-    // 关闭日期弹框
-    handleClose = () => {
-        this.setState({floatLayoutVisible: false});
     }
 
     // 公里数选择按钮
@@ -305,17 +293,12 @@ export default class Index extends Component {
             kmValue, saving, saved
         } = this.state;
 
-        const scrollStyle = {
-          height: '100px'
-        }
         const scrollLeft = currentSportIndex * itemWidth;
 
         return (
             <View className='page-wrapper'>
                 {/* 基本信息 */}
                 <View className='user-info'>
-                    {/* <OpenData type='userAvatarUrl'></OpenData>
-                    <OpenData type='userNickName'></OpenData> */}
                     <Image className='avatar-image' src={userInfo.avatarUrl} />
                     <View className='user-detail'>
                         <View className='user-detail-item'>
@@ -339,7 +322,6 @@ export default class Index extends Component {
                         scrollX
                         scrollWithAnimation
                         scrollLeft={scrollLeft}
-                        style={scrollStyle}
                         onScroll={this.onScroll}>
                         {
                             sportTypeArray.map((sportItem: {sportType: string, title: string}, index: number) => {
@@ -372,7 +354,7 @@ export default class Index extends Component {
                                 }
                                 return (
                                     <View key={sportType} className='sport-item-wrapper' id={sportType}>
-                                        <View className={`sport-flex-box ${extraClassName}`}>
+                                        <View className={`sport-flex-box ${extraClassName} ${isCurrentSport ? 'current-box' : ''}`}>
                                             <Image
                                                 src={imageMap[`${isCurrentSport ? sportType : `${sportType}Grey`}`]}
                                                 className={`sport-item-image ${isCurrentSport ? 'current-sport' : ''}`}
