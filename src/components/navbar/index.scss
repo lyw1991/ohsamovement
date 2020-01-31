@@ -1,0 +1,21 @@
+// navbar/index.scss
+
+.navbar-wrapper {
+    display: flex;
+    height: 90rpx;
+    align-items: center;
+    padding-left: 40rpx;
+    
+}
+
+.logo-image {
+    width: 46rpx;
+    height: 46rpx;
+    border-radius: 50%;
+    border: 1px solid #d8d8d8;
+}
+
+.nav-title {
+    margin-left: calc(50% - 103px); // 46 + 34/2 + 40 = 103 (logo宽 + 一个汉字宽 + 左侧padding)
+    font-size: 34px;
+}

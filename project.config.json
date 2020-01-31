@@ -2,7 +2,7 @@
 	"miniprogramRoot": "dist/",
 	"projectname": "ohsamovement",
 	"description": "欧萨运动打卡",
-	"appid": "touristappid",
+	"appid": "wx596302db565a3013",
 	"setting": {
 		"urlCheck": true,
 		"es6": false,

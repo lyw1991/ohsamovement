@@ -1,5 +1,6 @@
 import Taro, { Component } from '@tarojs/taro'
 import {View, Image, Text} from '@tarojs/components';
+import NavBar from '../../components/navbar/index'
 import './index.scss'
 
 // 引入图片
@@ -43,7 +44,9 @@ export default class Index extends Component {
     config: Config = {
         navigationBarTitleText: '运动',
         navigationBarTextStyle: 'black',
-        //navigationStyle: 'custom'
+        usingComponents: {
+            'navbar': '../../components/navbar/index', // 书写第三方组件的相对路径
+        },
     }
 
     // 按钮组点击事件
@@ -60,6 +63,7 @@ export default class Index extends Component {
         let today = currentBtn === '日';
         return (
             <View>
+                <NavBar title='运动' />
                 <View className='top-view'>
                     <Image className='index-logo' src={indexLogo} />
                 </View>

@@ -20,6 +20,16 @@ class App extends Component {
                 });
             }
         })
+        Taro.getSystemInfo({
+            success: (res) => {
+                // console.log(res);res.screenWidth
+                Taro.$navBarMarginTop = res.statusBarHeight || 0;
+                Taro.$screenWidth = res.screenWidth || 375;
+            },
+            fail: (error) => {
+                console.log(error);
+            }
+        });
     }
 
     componentDidShow () {}
@@ -37,14 +47,15 @@ class App extends Component {
      */
     config: Config = {
         pages: [
-        'pages/index/index',
-        'pages/punch/punch'
+            'pages/index/index',
+            'pages/punch/punch'
         ],
         window: {
-        backgroundTextStyle: 'light',
-        navigationBarBackgroundColor: '#fff',
-        navigationBarTitleText: 'WeChat',
-        navigationBarTextStyle: 'black'
+            backgroundTextStyle: 'light',
+            navigationBarBackgroundColor: '#fff',
+            navigationBarTitleText: 'WeChat',
+            navigationBarTextStyle: 'black',
+            navigationStyle: 'custom'
         },
         tabBar: {
             color: '#ddd',

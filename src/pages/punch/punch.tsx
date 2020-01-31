@@ -1,6 +1,7 @@
 import Taro, { Component } from '@tarojs/taro'
 import { View, Image, Text, Picker, ScrollView, OpenData } from '@tarojs/components'
 import { AtSegmentedControl, AtInput, AtButton, AtToast, AtMessage, AtModal, AtModalHeader, AtModalContent, AtModalAction } from 'taro-ui'
+import NavBar from '../../components/navbar/index'
 import './punch.scss'
 
 // 引入图标图片
@@ -120,11 +121,7 @@ export default class Index extends Component {
             }
         });
         this.setDateBtns();
-        wx.getSystemInfo({
-            success: res => {
-                itemWidth = (res.screenWidth - 30) * 0.1173 + 12;
-            }
-        })
+        itemWidth = (Taro.$screenWidth - 30) * 0.1173 + 12;
     }
 
     /**
@@ -136,7 +133,10 @@ export default class Index extends Component {
      */
     config: Config = {
         navigationBarTitleText: '打卡',
-        enablePullDownRefresh: false
+        enablePullDownRefresh: false,
+        usingComponents: {
+            'navbar': '../../components/navbar/index', // 书写第三方组件的相对路径
+        },
     }
 
     // 设置日期按钮组
@@ -336,7 +336,7 @@ export default class Index extends Component {
 
     render () {
         const {
-            userInfo, userDetail, currentDateBtn, currentValueBtn, files, dateBtnArray,
+            userDetail, currentDateBtn, currentValueBtn, files, dateBtnArray,
             selectedSportType, valueBtnMap, todayText, sportTypeArray, currentSportIndex,
             kmValue, saving, saved, confirmModalVisible, confirmMap
         } = this.state;
@@ -345,11 +345,12 @@ export default class Index extends Component {
 
         return (
             <View className='page-wrapper'>
-                <OpenData className='avatar' type='userAvatarUrl'></OpenData>
-                <OpenData className='name' type='userNickName' lang='zh_CN'></OpenData>
+                <NavBar title='打卡' />
                 {/* 基本信息 */}
                 <View className='user-info'>
-                    <Image className='avatar-image' src={userInfo.avatarUrl} />
+                    <View className='avatar-wrapper'>
+                        <OpenData type='userAvatarUrl'></OpenData>
+                    </View>
                     <View className='user-detail'>
                         <View className='user-detail-item'>
                             <Text>本月记录：</Text>
