@@ -1,7 +1,9 @@
 import Taro, { Component } from '@tarojs/taro'
-import { View, Image, Text, Picker, ScrollView } from '@tarojs/components'
-import { AtSegmentedControl, AtInput, AtButton, AtToast, AtMessage } from 'taro-ui'
+import { View, Image, Text, Picker, ScrollView, OpenData } from '@tarojs/components'
+import { AtSegmentedControl, AtInput, AtButton, AtToast, AtMessage, AtModal, AtModalHeader, AtModalContent, AtModalAction } from 'taro-ui'
 import './punch.scss'
+
+// 引入图标图片
 import UploadImage from '../../images/upload.png'
 import DeleteImage from '../../images/delete.png'
 import RegisterWhiteImage from '../../images/register-white.png'
@@ -98,7 +100,9 @@ export default class Index extends Component {
             currentValueBtn: 0, // 公里值按钮：默认为5公里
             kmValue: null, // 公里数入框的值
             files: [], // 图片上传
-            saving: false, // 打卡按钮的加载状态
+            confirmModalVisible: false, // 打卡确认弹框是否显示
+            confirmMap: null, // 确认弹框中的数据
+            saving: false, // 上传中的状态
             saved: false, // 打卡成功提示
         };
     }
@@ -111,21 +115,11 @@ export default class Index extends Component {
                     userInfo: res.data
                 });
             },
-            error (errorMsg) {
+            error: (errorMsg) => {
                 console.log(errorMsg);
             }
         });
-        const dateBtnArray = this.state.dateBtnArray;
-        const day1 = new Date();
-        dateBtnArray[0].date = this.commonFormatDateText(new Date(day1.setDate(day1.getDate() - 2)));
-        const day2 = new Date();
-        dateBtnArray[1].date = this.commonFormatDateText(new Date(day2.setDate(day2.getDate() - 1)));
-        const todayText = this.commonFormatDateText(new Date());
-        dateBtnArray[2].date = todayText;
-        this.setState({
-            dateBtnArray,
-            todayText: todayText
-        });
+        this.setDateBtns();
         wx.getSystemInfo({
             success: res => {
                 itemWidth = (res.screenWidth - 30) * 0.1173 + 12;
@@ -141,7 +135,23 @@ export default class Index extends Component {
      * 提示和声明 navigationBarTextStyle: 'black' | 'white' 类型冲突, 需要显示声明类型
      */
     config: Config = {
-        navigationBarTitleText: '打卡'
+        navigationBarTitleText: '打卡',
+        enablePullDownRefresh: false
+    }
+
+    // 设置日期按钮组
+    setDateBtns = () => {
+        const dateBtnArray = this.state.dateBtnArray;
+        const day1 = new Date();
+        dateBtnArray[0].date = this.commonFormatDateText(new Date(day1.setDate(day1.getDate() - 2)));
+        const day2 = new Date();
+        dateBtnArray[1].date = this.commonFormatDateText(new Date(day2.setDate(day2.getDate() - 1)));
+        const todayText = this.commonFormatDateText(new Date());
+        dateBtnArray[2].date = todayText;
+        this.setState({
+            dateBtnArray,
+            todayText: todayText
+        });
     }
 
     // 处理 Date => 2020-01-29
@@ -234,11 +244,15 @@ export default class Index extends Component {
 
     // 打卡按钮
     handlePunch = () => {
-        const {userInfo, currentDateBtn, dateBtnArray, selectedSportType, valueBtnMap, currentValueBtn, kmValue, files} = this.state;
+        const {
+            userInfo, currentDateBtn, dateBtnArray, selectedSportType, currentSportIndex,
+            valueBtnMap, currentValueBtn, kmValue, files, sportTypeArray
+        } = this.state;
         // 需要收集的数据：用户名，打卡日期，打卡类型，打卡公里数，上传的截图
         let parameters = {
             userName: userInfo.nickName,
             punchType: selectedSportType,
+            punchTypeName: sportTypeArray[currentSportIndex].title
         };
         if (!dateBtnArray[currentDateBtn].date) {
             this.commongErrorMsg('请选择要打卡的日期');
@@ -263,19 +277,40 @@ export default class Index extends Component {
             return;
         }
         parameters.files = files;
-        // console.log(parameters);
-        this.setState({saving: true});
-        setTimeout(() => {
+        // 显示打卡信息确认弹框
+        this.setState({
+            confirmModalVisible: true,
+            confirmMap: parameters
+        });
+    }
+
+    // 确认打卡
+    confirmPunching = () => {
+        this.setState({
+            confirmModalVisible: false
+        }, () => {
+            // 上传打卡信息
             this.setState({
-                saving: false,
-                saved: true
+                saving: true
             });
+            // 在这里调后台接口
             setTimeout(() => {
-                Taro.switchTab({
-                    url: '/pages/index/index'
+                this.setState({
+                    saving: false,
+                    saved: true
                 });
-            }, 1000);
-        }, 2500);
+                setTimeout(() => {
+                    this.resetFormData();
+                }, 1000);
+            }, 2500);
+        });
+    }
+
+    // 确认弹框取消事件
+    handleModalCancle = () => {
+        this.setState({
+            confirmModalVisible: false
+        });
     }
 
     // 显示错误信息
@@ -286,24 +321,41 @@ export default class Index extends Component {
         });
     }
 
+    // 重置打卡信息：打卡类型，公里按钮，上传截图
+    resetFormData = () => {
+        this.setState({
+            currentSportIndex: 4, // 当前选择的运动类型序号
+            selectedSportType: 'stepCounting', // 当前选择的运动类型: 默认为 计步
+            currentValueBtn: 0, // 公里值按钮：默认为5公里
+            kmValue: null, // 公里数入框的值
+            files: [], // 图片上传
+            saved: false // 打卡成功提示
+        });
+        this.setDateBtns();
+    }
+
     render () {
         const {
             userInfo, userDetail, currentDateBtn, currentValueBtn, files, dateBtnArray,
             selectedSportType, valueBtnMap, todayText, sportTypeArray, currentSportIndex,
-            kmValue, saving, saved
+            kmValue, saving, saved, confirmModalVisible, confirmMap
         } = this.state;
 
         const scrollLeft = currentSportIndex * itemWidth;
 
         return (
             <View className='page-wrapper'>
+                <OpenData className='avatar' type='userAvatarUrl'></OpenData>
+                <OpenData className='name' type='userNickName' lang='zh_CN'></OpenData>
                 {/* 基本信息 */}
                 <View className='user-info'>
                     <Image className='avatar-image' src={userInfo.avatarUrl} />
                     <View className='user-detail'>
                         <View className='user-detail-item'>
                             <Text>本月记录：</Text>
-                            <Text className={userDetail.kmCounts >= 100 ? 'complete-color' : 'unComplete-color'}>{userDetail.kmCounts}</Text>
+                            {/* <Text className={userDetail.kmCounts >= 100 ? 'complete-color' : 'unComplete-color'}>{userDetail.kmCounts}</Text> */}
+                            {/* 这里暂时总是显示为绿色 */}
+                            <Text className='complete-color'>{userDetail.kmCounts}</Text>
                             <Text> km / 100 km</Text>
                         </View>
                         <View className='user-detail-item'>
@@ -446,7 +498,7 @@ export default class Index extends Component {
                             return (
                                 <View key={file.path} className='image-wrapper'>
                                     <Image src={DeleteImage} className='delete-btn' onClick={this.handleDeleteImage.bind(this, index)}></Image>
-                                    <Image src={file.path} className='image-item' mode='aspectFit' onClick={this.handlePreviewImage.bind(this, index)}></Image>
+                                    <Image src={file.path} className='image-item' mode='aspectFill' onClick={this.handlePreviewImage.bind(this, index)}></Image>
                                 </View>
                             );
                         })
@@ -457,7 +509,10 @@ export default class Index extends Component {
                                 <View className='uploader-btn' onClick={this.handleUploadImage}>
                                     <Image src={UploadImage} mode='aspectFit'></Image>
                                 </View>
-                                <View className='uploader-tip'>点击上传图片<Text className='red-text'>*</Text></View>
+                                {
+                                    !files.length &&
+                                    <View className='uploader-tip'>点击上传图片<Text className='red-text'>*</Text></View>
+                                }
                             </View>
                     }
                 </View>
@@ -467,6 +522,39 @@ export default class Index extends Component {
                 <AtMessage />
                 <AtToast isOpened={saving} text='正在上传...' status='loading' hasMask></AtToast>
                 <AtToast isOpened={saved} text='打卡成功' icon='check-circle'></AtToast>
+                <AtModal isOpened={confirmModalVisible} closeOnClickOverlay={false}>
+                    <AtModalHeader>请确认打卡信息</AtModalHeader>
+                    <AtModalContent>
+                        <View className='confirm-row-item'>
+                            <View className='confirm-item-label'>打卡日期：</View>
+                            <View className='confirm-item-content'>{confirmMap.punchDate}</View>
+                        </View>
+                        <View className='confirm-row-item'>
+                            <View className='confirm-item-label'>运动类型：</View>
+                            <View className='confirm-item-content'>{confirmMap.punchTypeName}</View>
+                        </View>
+                        <View className='confirm-row-item'>
+                            <View className='confirm-item-label'>公里数：</View>
+                            <View className='confirm-item-content'>{confirmMap.punchValue} km</View>
+                        </View>
+                        <View className='confirm-row-item'>
+                            <View className='confirm-item-label'>截图：</View>
+                        </View>
+                        <View className='confirm-row-item'>
+                            {
+                                confirmMap.files.map((file: {path: string}, index: number) => {
+                                    return (
+                                        <Image key={file.path} src={file.path} className='confirm-image' mode='aspectFill' onClick={this.handlePreviewImage.bind(this, index)}></Image>
+                                    );
+                                }) 
+                            }
+                        </View>
+                    </AtModalContent>
+                    <AtModalAction>
+                        <AtButton className='modal-btn cancel' onClick={this.handleModalCancle}>取消</AtButton>
+                        <AtButton className='modal-btn confirm' onClick={this.confirmPunching}>确定</AtButton>
+                    </AtModalAction>
+                </AtModal>
             </View>
         );
     }

@@ -4,6 +4,7 @@
 @import "~taro-ui/dist/style/components/loading.scss";
 @import "~taro-ui/dist/style/components/toast.scss";
 @import "~taro-ui/dist/style/components/message.scss";
+@import "~taro-ui/dist/style/components/modal.scss";
 
 $greenColor: #2c8846;
 $lightGreyColor: #f6f6f6;
@@ -248,16 +249,16 @@ picker {
 
 .image-wrapper {
     position: relative;
-    margin-right: 20px;
-    padding: 9px;
-    width: 180px;
-    height: 180px;
-    border: 1px solid $lightGreyColor;
+    margin-right: 28px;
+    // padding: 9px;
+    width: 213px;
+    height: 192px;
+    // border: 1px solid $lightGreyColor;
     box-sizing: border-box;
     
     .image-item {
-        width: 160px;
-        height: 160px;
+        width: 213px;
+        height: 192px;
     }
 
     .delete-btn {
@@ -274,12 +275,13 @@ picker {
 .uploader-btn-wrapper {
     display: flex;
     align-items: flex-end;
+    height: 192px;
 }
 
 .uploader-btn {
     @include flex-both-center;
-    width: 129px;
-    height: 116px;
+    width: 213px;
+    height: 100%;
     border-radius: 10px;
     background: $lightGreyColor;
 }
@@ -323,4 +325,44 @@ picker {
         line-height: 66rpx;
         font-size: 31rpx;
     }
+}
+
+// 打卡确认弹框
+.confirm-row-item {
+    display: flex;
+    padding: 10px 30px;
+
+    .confirm-item-label {
+        width: 150px;
+    }
+
+    .confirm-image {
+        width: 150px;
+        height: 150px;
+    }
+
+    .confirm-image:not(:last-child) {
+        margin-right: 8px;
+    }
+}
+
+// .at-modal__footer 
+
+.modal-btn {
+    margin: 10rpx 40rpx;
+    padding: 0;
+    width: 190rpx;
+    height: 54rpx;
+    font-size: 26rpx;
+}
+
+.modal-btn.cancel {
+    line-height: 52rpx;
+}
+
+.modal-btn.confirm {
+    line-height: 54rpx;
+    color: #fff;
+    border: 0;
+    background: $greenColor;
 }
