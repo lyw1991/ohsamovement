@@ -16,6 +16,13 @@ $darkGreyColor: #666;
     align-items: center;
 }
 
+// 防止页面左右上下晃动
+page {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
 // 用户信息栏
 .user-info {
     display: flex;
@@ -50,97 +57,6 @@ $darkGreyColor: #666;
     
     .unComplete-color {
         color: #f30728;
-    }
-}
-
-// 运动类型选择器
-.scrollview {
-    margin-top: 20px;
-    padding: 0 30px;
-    height: 200px;
-    white-space: nowrap;
-    box-sizing: border-box;
-    
-    .sport-item-wrapper { // width margin（l + r） 如有修改， tsx文件中的 itemWidth 也应修改
-        display: inline-block;
-        margin: 0 6Px;
-        width: 11.73%; // 88px;
-        height: 200px;
-    }
-    
-    // 左右留白
-    .sport-item-wrapper:first-child {
-        margin-left: calc(50% - 20Px);
-    }
-    
-    .sport-item-wrapper:last-child {
-        margin-right: calc(50% - 20Px);
-    }
-    
-    .sport-flex-box {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        position: relative;
-        width: 100%;
-        
-        .sport-item-image.current-sport, .sport-title-wrapper {
-            width: 100%;
-        }
-        
-        .sport-item-divider {
-            margin-top: 6px;
-            height: 8px;
-            width: 100%;
-            border-radius: 4px;
-            background: $greenColor;
-        }
-        
-        .sport-item-title {
-            margin-top: 6px;
-            text-align: center;
-            font-size: 26px;
-            color: $greenColor;
-        }
-
-        .cover-view {
-            position: absolute;
-            width: 88rpx;
-            height: 140rpx;
-        }
-    }
-
-    .sport-item-image {
-        height: 140px;
-    }
-
-    // 以当前选中类型为中心，两侧的图片渐小，渐透明
-    .left-item .sport-item-image, .right-item .sport-item-image {
-        width: 85%;
-    }
-
-    .half-opacity .sport-item-image {
-        width: 72%;
-    }
-
-    .almost-opacity .sport-item-image {
-        width: 60%;
-    }
-            
-    .left-item.almost-opacity .cover-view {
-        background: linear-gradient(to right, #fff, rgba(255,255,255, .5));
-    }
-        
-    .left-item.half-opacity .cover-view {
-        background: linear-gradient(to right, rgba(255,255,255, .5), rgba(255,255,255, .3));
-    }
-    
-    .right-item.half-opacity .cover-view {
-        background: linear-gradient(to right, rgba(255,255,255, .3), rgba(255,255,255, .5));
-    }
-    
-    .right-item.almost-opacity .cover-view {
-        background: linear-gradient(to right, rgba(255,255,255, .5), #fff);
     }
 }
 
@@ -181,6 +97,117 @@ $darkGreyColor: #666;
 .button-item.current {
     color: #fff;
     background: $greenColor;
+}
+
+// 运动类型选择器
+.scrollview {
+    margin-top: 20px;
+    padding: 0 30px;
+    height: 200px;
+    white-space: nowrap;
+    box-sizing: border-box;
+    -webkit-overflow-scrolling: touch;
+    
+    .sport-item-wrapper { // width margin（l + r） 如有修改， tsx文件中的 itemWidth 也应修改
+        display: inline-block;
+        margin: 0 6Px;
+        width: 11.73%; // 88px;
+        height: 200px;
+    }
+    
+    // 左右留白
+    .sport-item-wrapper:first-child {
+        margin-left: calc(50% - 20Px);
+    }
+    
+    .sport-item-wrapper:last-child {
+        margin-right: calc(50% - 20Px);
+    }
+
+    .sport-flex-box {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+        width: 100%;
+        
+        .sport-item-divider {
+            margin-top: 6px;
+            height: 8px;
+            width: 100%;
+            border-radius: 4px;
+            background: $greenColor;
+        }
+        
+        .sport-item-title {
+            margin-top: 6px;
+            text-align: center;
+            font-size: 26px;
+            color: $greenColor;
+        }
+
+        .cover-view {
+            position: absolute;
+            width: 88rpx;
+            height: 140rpx;
+        }
+
+        .sport-image-wrapper {
+            position: relative;
+            width: 100%;
+            height: 140rpx;
+
+            .sport-item-image {
+                position: absolute;
+                left: 0;
+                height: 140px;
+            }
+        }
+    }
+
+    .sport-flex-box.current-box .sport-item-image, .sport-title-wrapper {
+        width: 100%;
+    }
+
+    .green-image {
+        opacity: 0;
+    }
+
+    .current-box .green-image {
+        opacity: 1;
+    }
+
+    // 以当前选中类型为中心，两侧的图片渐小，渐透明
+    .left-item .sport-item-image, .right-item .sport-item-image {
+        left: 7.5%;
+        width: 85%;
+    }
+
+    .half-opacity .sport-item-image {
+        left: 14%;
+        width: 72%;
+    }
+
+    .almost-opacity .sport-item-image {
+        left: 20%;
+        width: 60%;
+    }
+            
+    .left-item.almost-opacity .cover-view {
+        background: linear-gradient(to right, #fff, rgba(255,255,255, .5));
+    }
+        
+    .left-item.half-opacity .cover-view {
+        background: linear-gradient(to right, rgba(255,255,255, .5), rgba(255,255,255, .3));
+    }
+
+    .right-item.half-opacity .cover-view {
+        background: linear-gradient(to right, rgba(255,255,255, .3), rgba(255,255,255, .5));
+    }
+
+    .right-item.almost-opacity .cover-view {
+        background: linear-gradient(to right, rgba(255,255,255, .5), #fff);
+    }
 }
 
 // 时间选择器
@@ -346,8 +373,6 @@ picker {
         margin-right: 8px;
     }
 }
-
-// .at-modal__footer 
 
 .modal-btn {
     margin: 10rpx 40rpx;

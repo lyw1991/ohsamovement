@@ -106,6 +106,9 @@ export default class Index extends Component {
             saving: false, // 上传中的状态
             saved: false, // 打卡成功提示
         };
+        this.scrollType = ''; // 触发滚动的方式：点击导致 | 用户操作
+        this.scrollLeftPoint = 4 * itemWidth;
+        this.scrollEndTimer = null; // 监听滚动结束的计时器
     }
 
     componentDidMount () {
@@ -122,6 +125,8 @@ export default class Index extends Component {
         });
         this.setDateBtns();
         itemWidth = (Taro.$screenWidth - 30) * 0.1173 + 12;
+        this.scrollLeftPoint = 4 * itemWidth;
+        this.scrollListener();
     }
 
     /**
@@ -134,9 +139,6 @@ export default class Index extends Component {
     config: Config = {
         navigationBarTitleText: '打卡',
         enablePullDownRefresh: false,
-        usingComponents: {
-            'navbar': '../../components/navbar/index', // 书写第三方组件的相对路径
-        },
     }
 
     // 设置日期按钮组
@@ -166,14 +168,64 @@ export default class Index extends Component {
         }
         return date.getFullYear() + '-' + currentMonth + '-' + currentDate;
     }
+
+    // 监听滚动 id = 'scroll-view'
+    scrollListener = () => {
+        const interval = 50;
+        setInterval(() => {
+            // 忽略点击导致的滚动
+            if (this.scrollType === 'click') {
+                return;
+            }
+            if (this.scrollPointMap && new Date().valueOf() - this.scrollPointMap.timeX > interval) {
+                let scrollLeft = this.scrollPointMap.scrollLeft;
+                let sportIndex = Math.round(scrollLeft / itemWidth);
+                if (sportIndex < 0) {
+                    sportIndex = 0;
+                }
+                if (sportIndex > 9) {
+                    sportIndex = 9;
+                }
+                if (this.state.currentSportIndex !== sportIndex) {
+                    this.setState({
+                        currentSportIndex: sportIndex,
+                        selectedSportType: this.state.sportTypeArray[sportIndex].sportType
+                    }, () => {
+                        this.scrolling = false;
+                    });
+                } else {
+                    setTimeout(() => {
+                        this.scrolling = false;
+                    }, 100);
+                }
+            }
+        }, interval);
+    }
     
     // 运动类型选择事件: 根据滚动位移计算当前选中的类型
-    onScroll = (e: {detail: {scrollLeft: number}}) => {
+    handleSportTypeScroll = (e: {detail: {scrollLeft: number}}) => {
         const {scrollLeft} = e.detail;
-        let sportIndex = Math.round(scrollLeft / itemWidth);
+        this.scrolling = true;
+        this.scrollPointMap = {
+            scrollLeft: scrollLeft,
+            timeX: new Date().valueOf()
+        };
+    }
+
+    // 运动类型选择事件: 点击
+    handleSportTypeClick = (sportIndex: number) => {
+        // 滚动中不可点击
+        if (this.scrolling) {
+            return;
+        }
+        this.scrollType = 'click';
         this.setState({
             currentSportIndex: sportIndex,
             selectedSportType: this.state.sportTypeArray[sportIndex].sportType
+        }, () => {
+            setTimeout(() => {
+                this.scrollType = '';
+            }, 500);
         });
     }
 
@@ -226,8 +278,6 @@ export default class Index extends Component {
         Taro.previewImage({
             current: this.state.files[index].path,
             urls: this.state.files.map(item => item.path)
-        }).then(() => {
-            // console.log('查看图片中');
         })
     }
 
@@ -375,7 +425,7 @@ export default class Index extends Component {
                         scrollX
                         scrollWithAnimation
                         scrollLeft={scrollLeft}
-                        onScroll={this.onScroll}>
+                        onScroll={this.handleSportTypeScroll}>
                         {
                             sportTypeArray.map((sportItem: {sportType: string, title: string}, index: number) => {
                                 const {sportType, title} = sportItem;
@@ -384,7 +434,7 @@ export default class Index extends Component {
                                 let isLeft = false;
                                 let isAlmostOpacity = false;
                                 let isHalfOpacity = false;
-                                // 如果是左边的，左侧更透明一些; 离得
+                                // 如果是左边的，左侧更透明一些，且离得越远越小越透明
                                 if (indexDiff < 0) {
                                     isAlmostOpacity = indexDiff < -2;
                                     isHalfOpacity = indexDiff === -2;
@@ -407,11 +457,17 @@ export default class Index extends Component {
                                 }
                                 return (
                                     <View key={sportType} className='sport-item-wrapper' id={sportType}>
-                                        <View className={`sport-flex-box ${extraClassName} ${isCurrentSport ? 'current-box' : ''}`}>
-                                            <Image
-                                                src={imageMap[`${isCurrentSport ? sportType : `${sportType}Grey`}`]}
-                                                className={`sport-item-image ${isCurrentSport ? 'current-sport' : ''}`}
-                                                mode='aspectFit'></Image>
+                                        <View onClick={this.handleSportTypeClick.bind(this, index)} className={`sport-flex-box ${extraClassName} ${isCurrentSport ? 'current-box' : ''}`}>
+                                            <View className='sport-image-wrapper'>
+                                                <Image
+                                                    src={imageMap[`${sportType}Grey`]}
+                                                    className='sport-item-image'
+                                                    mode='aspectFit'></Image>
+                                                <Image
+                                                    src={imageMap[sportType]}
+                                                    className='sport-item-image green-image'
+                                                    mode='aspectFit'></Image>
+                                            </View>
                                             {
                                                 isCurrentSport &&
                                                 <View className='sport-title-wrapper'>

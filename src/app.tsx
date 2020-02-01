@@ -22,7 +22,6 @@ class App extends Component {
         })
         Taro.getSystemInfo({
             success: (res) => {
-                // console.log(res);res.screenWidth
                 Taro.$navBarMarginTop = res.statusBarHeight || 0;
                 Taro.$screenWidth = res.screenWidth || 375;
             },
