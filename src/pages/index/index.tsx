@@ -11,7 +11,8 @@ export default class Index extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            currentBtn: '月',
+            currentTimeBtn: '月',
+            currentSortBtn: '公里数',
             dataList: [
                 {name: '王茹', value: 1200, day: 365},
                 {name: '王2茹', value: 30, day: 1},
@@ -49,18 +50,26 @@ export default class Index extends Component {
         },
     }
 
-    // 按钮组点击事件
-    handleBtnClick = (e: string) => {
+    // 年月日切换
+    handleBtnTimeClick = (e: string) => {
         this.setState({
-            currentBtn: e,
+            currentTimeBtn: e,
+        });
+    }
+
+    // 公里数、天数切换
+    handleBtnSortClick = (e: string) => {
+        this.setState({
+            currentSortBtn: e,
         });
     }
 
     render () {
-        const {currentBtn, dataList} = this.state;
+        const {currentTimeBtn, currentSortBtn, dataList} = this.state;
         // 按钮组
-        let btnList = ['日', '月', '年'];
-        let today = currentBtn === '日';
+        let timebtnList = ['日', '月', '年'];
+        let sortBtnList = ['公里数', '天数'];
+        let today = currentTimeBtn === '日';
         return (
             <View>
                 <NavBar title='运动' />
@@ -70,16 +79,30 @@ export default class Index extends Component {
                 <View className='content-view'>
                     <View className='content-text'>统计打卡</View>
                     <View className='button-group'>
-                        {
-                            btnList.map((item, index) => {
-                                let isCurrentBtn = currentBtn === item;
-                                return (
-                                    <View key={index} className={`button-item ${isCurrentBtn ? 'current' : ''}`} onClick={this.handleBtnClick.bind(this, item)}>
-                                        <View className='button-title'>{item}</View>
-                                    </View>
-                                );
-                            })
-                        }
+                        <View style={{display: 'flex',marginRight: '10px'}}>
+                            {
+                                sortBtnList.map((item) => {
+                                    let isCurrentSortBtn = currentSortBtn === item;
+                                    return (
+                                        <View key={item} className={`button-item ${isCurrentSortBtn ? 'current' : ''}`} onClick={this.handleBtnSortClick.bind(this, item)}>
+                                            <View className='button-title'>{item}</View>
+                                        </View>
+                                    );
+                                })
+                            }
+                        </View>
+                        <View style={{display: 'flex'}}>
+                            {
+                                timebtnList.map((item) => {
+                                    let isCurrentTimeBtn = currentTimeBtn === item;
+                                    return (
+                                        <View key={item} className={`button-item ${isCurrentTimeBtn ? 'current' : ''}`} onClick={this.handleBtnTimeClick.bind(this, item)}>
+                                            <View className='button-title'>{item}</View>
+                                        </View>
+                                    );
+                                })
+                            }
+                        </View>
                     </View>
                 </View>
                 <View className='list-view'>
